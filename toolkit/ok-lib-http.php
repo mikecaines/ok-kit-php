@@ -2,9 +2,7 @@
 function ok_createHttpStatusHeader($aHttpStatusCode) {
 	$headers = array(
 		200 => '200 OK',
-		301 => '301 Moved Permanently',
 		304 => '304 Not Modified',
-		307 => '307 Temporary Redirect',
 		403 => '403 Forbidden',
 		404 => '404 Not Found',
 		408 => '408 Request Time-out',
