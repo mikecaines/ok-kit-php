@@ -1,0 +1,452 @@
+<?php
+/**
+ * @link https://github.com/mikecaines/ok-kit-php
+ * @licence https://github.com/mikecaines/ok-kit-php/blob/master/LICENSE
+ */
+
+/**
+ * Gets the item located at the specified path in the source array.
+ * If the item is not found, null is returned.
+ * @param array $aArray Source array.
+ * @param string $aPath Path to item.
+ * @param string $aSeparator Separator used by path.
+ * @return mixed Retrieved item or null.
+ */
+function ok_arrayGet($aArray, $aPath, $aSeparator = '.') {
+	return ok_arrayScout($aArray, $aPath, $aSeparator)[1];
+}
+
+/**
+ * Sets the item to the location at the specified path in the destination array.
+ * If any steps along the path do not exist, or are not an array, they will be set to an array.
+ * @param array $aArray Destination array.
+ * @param string $aPath Path to item.
+ * @param mixed $aValue Value of item.
+ * @param string $aSeparator Separator used by path.
+ */
+function ok_arraySet(&$aArray, $aPath, $aValue, $aSeparator = '.') {
+	$steps = explode($aSeparator, $aPath);
+
+	$node = &$aArray;
+
+	for ($i = 0; $i < count($steps) - 1; $i++) {
+		if (array_key_exists($steps[$i], $node) == false || !is_array($node[$steps[$i]])) {
+			$node[$steps[$i]] = array();
+		}
+
+		$node = &$node[$steps[$i]];
+	}
+
+	$node[$steps[$i]] = $aValue;
+}
+
+/**
+ * Similar to ok_arraySet(), except the value is pushed onto the item at the path.
+ * If the item at the path is not an array, it will be set to one.
+ * @param $aArray
+ * @param $aPath
+ * @param $aValue
+ * @param string $aSeparator
+ */
+function ok_arrayPushSet(&$aArray, $aPath, $aValue, $aSeparator = '.') {
+	$steps = explode($aSeparator, $aPath);
+
+	$node = &$aArray;
+
+	for ($i = 0; $i < count($steps) - 1; $i++) {
+		if (array_key_exists($steps[$i], $node) == false || !is_array($node[$steps[$i]])) {
+			$node[$steps[$i]] = array();
+		}
+
+		$node = &$node[$steps[$i]];
+	}
+
+	$node[$steps[$i]][] = $aValue;
+}
+
+/**
+ * Inspects the source array and determines whether an item exists at the specified path.
+ * @param array $aArray Source array.
+ * @param string $aPath Path to item.
+ * @param string $aSeparator Separator used by path.
+ * @return array Array with integer keys containing result information.
+ *   The first element contains a boolean value as to whether the item exists.
+ *   The second element is the value of the element if it exists, or null if it does not.
+ */
+function ok_arrayScout($aArray, $aPath, $aSeparator = '.') {
+	$result = array(false, null);
+
+	$steps = explode($aSeparator, $aPath);
+
+	$node = $aArray;
+	for ($i = 0; $i < count($steps); $i++) {
+		if (is_array($node) && array_key_exists($steps[$i], $node)) {
+			$node = $node[$steps[$i]];
+			continue;
+		}
+
+		else if (is_object($node) && $node instanceof ok_ToArrayInterface) {
+			$t = $node->toArray();
+
+			if (array_key_exists($steps[$i], $t)) {
+				$node = $t[$steps[$i]];
+				continue;
+			}
+		}
+
+		break;
+	}
+
+	if ($i == count($steps)) {
+		$result = array(true, $node);
+	}
+
+	return $result;
+}
+
+/**
+ * Gets items specified by paths from the source array, and sets them in the returned array.
+ * @param array $aArray Source array.
+ * @param array $aPaths Array of paths to items.
+ * @param bool $aFill If true, non-existent items will be set to null.
+ * @return array Array containing extracted items.
+ */
+function ok_arrayExtract($aArray, $aPaths, $aFill = false) {
+	$arr = array();
+
+	foreach ($aPaths as $k) {
+		$p = ok_arrayScout($aArray, $k);
+
+		if ($p[0]) {
+			ok_arraySet($arr, $k, $p[1]);
+		}
+		else if ($aFill) {
+			ok_arraySet($arr, $k, null);
+		}
+	}
+
+	return $arr;
+}
+
+/**
+ * Trims elements in an array, optionally recursively.
+ * Only values which are scalar or null, will be modified.
+ * @param array $aArray Array of elements to be trimmed.
+ * @param bool $aDeep If true, will trim recursively.
+ * @return array Array of trimmed elements.
+ */
+function ok_arrayTrim($aArray, $aDeep = false) {
+	$arr = array();
+
+	foreach ($aArray as $k => $v) {
+		if ($v == null || is_scalar($v)) {
+			$arr[$k] = trim($v);
+		}
+		else if ($aDeep) {
+			$arr[$k] = ok_arrayTrim($v, $aDeep);
+		}
+		else {
+			$arr[$k] = $v;
+		}
+	}
+
+	return $arr;
+}
+
+/**
+ * Creates a new array which can be used as a lookup of the original array.
+ * @param array $aArray Reference to a 2D array.
+ * @param string $aPrimaryKey The 2nd level key of the source array,
+ *   whose corresponding value will be used as the 1st level key in the destination array.
+ * @return array The generated lookup.
+ * @throws Exception if a duplicate primary key value is encountered.
+ */
+function ok_arrayDelegate(&$aArray, $aPrimaryKey) {
+  $arr = array();
+
+  foreach ($aArray as &$v) {
+    if (array_key_exists($v[$aPrimaryKey], $arr)) {
+      throw new Exception("Duplicate value found for primary key: '" . $aPrimaryKey . "'. Value: '" . $v[$aPrimaryKey] . "'.");
+    }
+
+    $arr[$v[$aPrimaryKey]] = &$v;
+  }
+
+  return $arr;
+}
+
+/**
+ * Creates a tree structure from a 2D, self-referencing source.
+ * @param array $aArray Reference to a 2D array.
+ * @param string $aPrimaryKey Key of 2nd level element whose value is its identifier.
+ * @param string $aForeignKey Key of 2nd level element whose value is the identifier of its parent.
+ * @param string $aChildrenKey Key of new element to be created, which stores an array of child elements.
+ * @param string $aParentKey Key of new element to be created, which stores a reference to the parent element.
+ * @throws Exception if a reference to a non-existent element is encountered.
+ * @return array Nested structure of lookups.
+ */
+function ok_arrayTree(&$aArray, $aPrimaryKey, $aForeignKey, $aChildrenKey, $aParentKey) {
+  $arr = array();
+
+	$lookup = ok_arrayDelegate($aArray, $aPrimaryKey);
+
+	//init each child array to empty
+  foreach ($lookup as &$v) {
+  	$v[$aChildrenKey] = array();
+  }
+  unset($v);
+
+  foreach ($lookup as &$v) {
+  	if ($v[$aForeignKey] != null && !array_key_exists($v[$aForeignKey], $lookup)) {
+  		throw new Exception("Reference to non-existent element with identifier '" . $v[$aForeignKey] . "'.");
+  	}
+
+    //if the current item references a parent
+    if ($v[$aForeignKey] != null) {
+		  //set the parent key to a reference to the parent
+      $v[$aParentKey] = &$lookup[$v[$aForeignKey]];
+
+	    //add the current item to its parent's list of children
+      $lookup[$v[$aForeignKey]][$aChildrenKey][$v[$aPrimaryKey]] = &$v;
+    }
+
+    //else the current item is top-level
+    else {
+      //set the parent key to null
+      $v[$aParentKey] = null;
+
+	    //add the current item to the top level
+      $arr[$v[$aPrimaryKey]] = &$v;
+    }
+  }
+
+  return $arr;
+}
+
+/**
+ * Checks the elements specified by $aKeys, and returns the first non-null value.
+ * @param array $aArray Array to check.
+ * @param array $aKeys Array of keys to check.
+ * @return mixed First non-null value encountered or null.
+ */
+function ok_arrayCoalesce($aArray, $aKeys) {
+	foreach ($aKeys as $key) {
+		if (array_key_exists($key, $aArray)) {
+			$value = $aArray[$key];
+			if ($value !== null) return $value;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * @param array $aArray Source array.
+ * @param string $aPath Path of the item to retrieve.
+ * @param string $aSeparator Separator used by path.
+ * @return array Array of retrieved items.
+ * @see ok_arrayGet()
+ */
+function ok_array2dGet($aArray, $aPath, $aSeparator = '.') {
+	$values = array();
+
+	foreach ($aArray as $v) {
+		$values[] = ok_arrayGet($v, $aPath, $aSeparator);
+	}
+
+	return $values;
+}
+
+/**
+ * @param array $aArray Source array.
+ * @param string $aPath Path of the item to check.
+ * @param mixed $aValue Value to compare to.
+ * @param string $aSeparator Separator used by path.
+ * @return bool|int|string Integer or string key if a match was found, boolean false if not.
+ */
+function ok_array2dSearch($aArray, $aPath, $aValue, $aSeparator = '.') {
+	foreach ($aArray as $k => $v) {
+		if (ok_arrayGet($v, $aPath, $aSeparator) == $aValue) {
+			return $k;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Recursively merges $aArray2 into $aArray1 according to specific criteria.
+ * Associative arrays are recursively merged.
+ * Vector arrays are replaced, not merged or appended to.
+ * @param $aArray1 Array to merge into.
+ * @param $aArray2 Array to merge from.
+ * @return array The new merged array.
+ * @throws Exception if a vector & associative array would be merged.
+ */
+function ok_arrayMergeStruct($aArray1, $aArray2) {
+	$v1 = ok_isVector($aArray1);
+	$v2 = ok_isVector($aArray2);
+
+	if ((($v1 && !$v2) || ($v2 && !$v1)) && count($aArray1) > 0 && count($aArray2) > 0) {
+		throw new Exception("Cannot merge associative array with vector array.");
+	}
+
+	//if $aArray2 is a vector, replace aArray1 with aArray2
+	if ($v2) {
+		$arr = $aArray2;
+	}
+
+	else {
+		$arr = $aArray1;
+
+		foreach ($aArray2 as $k => $v) {
+			if (array_key_exists($k, $arr) && is_array($arr[$k]) && is_array($v)) {
+				$arr[$k] = ok_arrayMergeStruct($arr[$k], $v);
+			}
+
+			else {
+				$arr[$k] = $v;
+			}
+		}
+	}
+
+	return $arr;
+}
+
+function ok_arrayFlatten($aArray, $aSeparator = '.') {
+	$arr = array();
+
+	foreach ($aArray as $k => $v) {
+		if (is_scalar($v)) {
+			$arr[$k] = $v;
+		}
+
+		else {
+			$arrarr = ok_arrayFlatten($v, $aSeparator);
+
+			foreach ($arrarr as $kk => $vv) {
+				$arr[$k . $aSeparator . $kk] = $vv;
+			}
+		}
+	}
+
+	return $arr;
+}
+
+function ok_arrayUnflatten($aArray, $aSeparator = '.') {
+	$arr = array();
+
+	foreach ($aArray as $k => $v) {
+		ok_arraySet($arr, $k, $v, $aSeparator);
+	}
+
+	return $arr;
+}
+
+/**
+ * Inserts a new element, before an existing element.
+ * @param array $aArray The source array.
+ * @param string|int $aKey Key of existing element to insert before.
+ * @param string|int $aNewKey Key of new element.
+ * @param mixed $aNewValue Value of new element.
+ * @return array The new array.
+ * @throws Exception if the specified key does not exist in the array.
+ */
+function ok_arrayInsertBefore($aArray, $aKey, $aNewKey, $aNewValue) {
+	$keys = array_keys($aArray);
+	$values = array_values($aArray);
+
+	$index = array_search($aKey, $keys);
+
+	if ($index === false) {
+		throw new Exception("Key does not exist: '" . $aKey . "'.");
+	}
+
+	array_splice($keys, $index, 0, $aNewKey);
+	array_splice($values, $index, 0, array($aNewValue));
+
+	return array_combine($keys, $values);
+}
+
+/**
+ * Checks elements in an array against a regexp, and if they match, replaces the value with the specified value.
+ * Boolean and null values are unmodified.
+ * Other scalar values are matched against the regexp.
+ * If $aDeep is true, arrays are processed recursively, otherwise they are unmodified.
+ * All other values are unmodified.
+ * @param array $aArray Source array.
+ * @param string $aRegexp A regular expression to match against.
+ * @param mixed $aSubstitute The substitute value which will replace matched values.
+ * @param bool $aDeep If true, arrays are processed recursively.
+ * @return array The new array.
+ */
+function ok_arraySubstitute($aArray, $aRegexp, $aSubstitute, $aDeep = false) {
+	$arr = array();
+
+	foreach ($aArray as $k => $v) {
+		if (is_bool($v) || is_null($v)) {
+			$arr[$k] = $v;
+		}
+		else if (is_scalar($v) && preg_match($aRegexp, $v) == 1) {
+			$arr[$k] = $aSubstitute;
+		}
+		else if (is_array($v) && $aDeep == true) {
+			$arr[$k] = ok_arraySubstitute($v, $aRegexp, $aSubstitute, true);
+		}
+		else {
+			$arr[$k] = $v;
+		}
+	}
+
+	return $arr;
+}
+
+/**
+ * Converts an object to an array according to specific criteria.
+ * @param mixed $aThing An array or an object which implements ok_ToArrayInterface.
+ * @param bool $aDeep If true, conversion is done recursively.
+ * @return array The array created from the object.
+ * @throws Exception if the object cannot be converted to an array.
+ */
+function ok_toArray($aThing, $aDeep = false) {
+	if (is_array($aThing)) {
+		$arr = $aThing;
+	}
+	else if (is_object($aThing) && $aThing instanceof ok_ToArrayInterface) {
+		$arr = $aThing->toArray();
+	}
+	else {
+		throw new Exception("Could not convert to array: '" . (is_object($aThing) ? get_class($aThing) : $aThing) . "'");
+	}
+
+	if ($aDeep) {
+		foreach ($arr as $k => $v) {
+			if (is_null($v) || is_scalar($v)) {
+				$arr[$k] = $v;
+			}
+			else {
+				$arr[$k] = ok_toArray($v, $aDeep);
+			}
+		}
+	}
+
+	return $arr;
+}
+
+/**
+ * Checks if an array has sequential integer keys.
+ * @param array $aArray The array to check
+ * @return bool If the array is a vector or not.
+ */
+function ok_isVector($aArray) {
+	$i = 0;
+
+	if (is_array($aArray)) {
+		foreach ($aArray as $k => $v) {
+			if ((string)$k != (string)$i) return false;
+			$i++;
+		}
+	}
+
+	return $i > 0;
+}
