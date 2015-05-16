@@ -121,6 +121,10 @@ class ok_Url {
 		$this->parts['scheme'] = (string)$aScheme;
 	}
 
+	public function getScheme() {
+		return $this->parts['scheme'];
+	}
+
 	public function getHost() {
 		return $this->parts['host'];
 	}
