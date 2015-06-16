@@ -1,5 +1,7 @@
 <?php
-class ok_Datetime {
+namespace Ok;
+
+class Datetime {
 	private $datetime;
 	
 	public function modify($aModifier) {

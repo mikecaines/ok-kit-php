@@ -1,5 +1,9 @@
 <?php
-class ok_Url {
+namespace Ok;
+
+use Exception;
+
+class Url {
 	private $parts;
 
 	private function parseUrl($aString) {
