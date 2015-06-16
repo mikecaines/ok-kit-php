@@ -1,0 +1,9 @@
+{
+  "name": "mikecaines/ok-kit-php",
+
+  "autoload": {
+    "psr-4": {
+      "Ok\\": "src/Ok"
+    }
+  }
+}
