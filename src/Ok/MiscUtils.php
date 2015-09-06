@@ -5,7 +5,7 @@ abstract class MiscUtils {
 	static public function varInfo($aVar) {
 		ob_start();
 		var_dump($aVar);
-		return ob_get_clean();
+		return trim(ob_get_clean());
 	}
 
 	/**
