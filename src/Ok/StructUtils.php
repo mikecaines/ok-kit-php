@@ -71,7 +71,7 @@ abstract class StructUtils {
 
 	/**
 	 * Inspects the source array and determines whether an item exists at the specified path.
-	 * @param array $aArray Source array.
+	 * @param array|\ArrayAccess|ToArrayInterface $aArray Source array.
 	 * @param string $aPath Path to item.
 	 * @param string $aSeparator Separator used by path.
 	 * @return array Array with integer keys containing result information.
@@ -90,12 +90,19 @@ abstract class StructUtils {
 				continue;
 			}
 
-			else if (is_object($node) && $node instanceof ToArrayInterface) {
-				$t = $node->toArray();
-
-				if (array_key_exists($steps[$i], $t)) {
-					$node = $t[$steps[$i]];
+			else if (is_object($node)) {
+				if ($node instanceof \ArrayAccess && $node->offsetExists($steps[$i])) {
+					$node = $node->offsetGet($steps[$i]);
 					continue;
+				}
+
+				else if ($node instanceof ToArrayInterface) {
+					$t = $node->toArray();
+
+					if (array_key_exists($steps[$i], $t)) {
+						$node = $t[$steps[$i]];
+						continue;
+					}
 				}
 			}
 
