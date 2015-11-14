@@ -290,8 +290,8 @@ abstract class StructUtils {
 	 * Recursively merges $aArray2 into $aArray1 according to specific criteria.
 	 * Associative arrays are recursively merged.
 	 * Vector arrays are replaced, not merged or appended to.
-	 * @param $aArray1 Array to merge into.
-	 * @param $aArray2 Array to merge from.
+	 * @param $aArray1 array Array to merge into.
+	 * @param $aArray2 array Array to merge from.
 	 * @return array The new merged array.
 	 * @throws Exception if a vector & associative array would be merged.
 	 */
