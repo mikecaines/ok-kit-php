@@ -2,5 +2,5 @@
 namespace Ok;
 
 interface ToArrayInterface {
-    function toArray();
+	function toArray();
 }
