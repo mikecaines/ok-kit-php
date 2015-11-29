@@ -3,7 +3,7 @@
 
 	"autoload": {
 		"psr-4": {
-			"Ok\\": "src/Ok"
+			"Solarfield\\Ok\\": "src/Solarfield/Ok"
 		}
 	}
 }
