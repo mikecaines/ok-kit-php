@@ -4,7 +4,7 @@
  * @licence https://github.com/solarfield/ok-kit-php/blob/master/LICENSE
  */
 
-namespace Ok;
+namespace Solarfield\Ok;
 
 use Exception;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Ok;
+namespace Solarfield\Ok;
 
 class Datetime {
 	private $datetime;

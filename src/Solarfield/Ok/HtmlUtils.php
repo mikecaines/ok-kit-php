@@ -1,5 +1,5 @@
 <?php
-namespace Ok;
+namespace Solarfield\Ok;
 
 abstract class HtmlUtils {
 	static public function squishHtml($aText) {

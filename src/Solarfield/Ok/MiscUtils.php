@@ -1,5 +1,5 @@
 <?php
-namespace Ok;
+namespace Solarfield\Ok;
 
 abstract class MiscUtils {
 	static public function varInfo($aVar) {

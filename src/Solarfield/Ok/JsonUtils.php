@@ -1,5 +1,5 @@
 <?php
-namespace Ok;
+namespace Solarfield\Ok;
 
 abstract class JsonUtils {
 	static public function toJson($aThing) {
