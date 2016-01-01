@@ -9,6 +9,10 @@ namespace Solarfield\Ok;
 use Exception;
 
 abstract class StructUtils {
+	static public function has($aArray, $aPath, $aSeparator = '.') {
+		return static::scout($aArray, $aPath, $aSeparator)[0];
+	}
+
 	/**
 	 * Gets the item located at the specified path in the source array.
 	 * If the item is not found, null is returned.
