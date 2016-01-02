@@ -1,7 +1,7 @@
 <?php
 /**
  * @link https://github.com/solarfield/ok-kit-php
- * @licence https://github.com/solarfield/ok-kit-php/blob/master/LICENSE
+ * @license https://github.com/solarfield/ok-kit-php/blob/master/LICENSE
  */
 
 namespace Solarfield\Ok;
