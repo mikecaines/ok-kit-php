@@ -40,4 +40,31 @@ abstract class StringUtils {
 
 		return $str;
 	}
+
+	static public function summarize($aText, $aLength, $aSuffix = '...') {
+		$text = trim($aText);
+
+		if (strlen($text) > 0) {
+			if (strlen($text) > $aLength) {
+				$text = substr($text, 0, $aLength);
+
+				if ($aLength > 0) {
+					//trim the end at a word boundary
+
+					$text = strrev($text);
+
+					if (preg_match('/(?:\\s(\\S))|\\./', $text, $matches, PREG_OFFSET_CAPTURE)) {
+						$newEnd = $matches[1][1];
+						if ($matches[1][0] == '.') $newEnd++;
+
+						$text = substr($text, $newEnd);
+					}
+
+					$text = strrev($text) . $aSuffix;
+				}
+			}
+		}
+
+		return $text;
+	}
 }
