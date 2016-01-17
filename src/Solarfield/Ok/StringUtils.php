@@ -44,10 +44,10 @@ abstract class StringUtils {
 	static public function summarize($aText, $aLength, $aSuffix = '...') {
 		$text = $aText;
 
-		if (strlen($aText) > 0) {
-			if (strlen($text) > $aLength) {
+		if (grapheme_strlen($aText) > 0) {
+			if (grapheme_strlen($text) > $aLength) {
 				$text = trim($text);
-				$text = substr($text, 0, $aLength);
+				$text = grapheme_substr($text, 0, $aLength);
 
 				if ($aLength > 0) {
 					//trim the end at a word boundary
@@ -58,7 +58,7 @@ abstract class StringUtils {
 						$newEnd = $matches[1][1];
 						if ($matches[1][0] == '.') $newEnd++;
 
-						$text = substr($text, $newEnd);
+						$text = grapheme_substr($text, $newEnd);
 					}
 
 					$text = strrev($text) . $aSuffix;
