@@ -42,10 +42,11 @@ abstract class StringUtils {
 	}
 
 	static public function summarize($aText, $aLength, $aSuffix = '...') {
-		$text = trim($aText);
+		$text = $aText;
 
-		if (strlen($text) > 0) {
+		if (strlen($aText) > 0) {
 			if (strlen($text) > $aLength) {
+				$text = trim($text);
 				$text = substr($text, 0, $aLength);
 
 				if ($aLength > 0) {
