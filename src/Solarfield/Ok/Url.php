@@ -9,10 +9,6 @@ class Url {
 	private function parseUrl($aString) {
 		$string = trim($aString);
 
-		if (preg_match('/^[^\/:]:\/\//', $string) == 0 && preg_match('/^[^\/]/', $string) == 1) {
-			$string = '//' . $string;
-		}
-
 		$parts = parse_url($string);
 
 		if ($parts === false) {
