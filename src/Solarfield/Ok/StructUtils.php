@@ -417,6 +417,26 @@ abstract class StructUtils {
 		return $arr;
 	}
 
+	static public function import($aSource, $aMap, $aScalarOnly = false) {
+		$dest = [];
+
+		foreach ($aMap as $translation) {
+			if (is_string($translation)) $translation = [$translation, $translation];
+			else if (count($translation) == 1) $translation[] = $translation[0];
+
+			$srcInfo = static::scout($aSource, $translation[0]);
+			if ($srcInfo[0]) {
+				if ($aScalarOnly && !(is_null($srcInfo[1]) || is_scalar($srcInfo[1]))) throw new Exception(
+					"Encountered non-scalar/null value at '$translation[0]'."
+				);
+
+				static::set($dest, $translation[1], $srcInfo[1]);
+			}
+		}
+
+		return $dest;
+	}
+
 	/**
 	 * Converts an object to an array according to specific criteria.
 	 * @param mixed $aThing An array or an object which implements ToArrayInterface.
