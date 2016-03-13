@@ -54,7 +54,7 @@ abstract class StringUtils {
 
 					$text = strrev($text);
 
-					if (preg_match('/(?:\\s(\\S))|\\./', $text, $matches, PREG_OFFSET_CAPTURE)) {
+					if (preg_match('/(?:\\s(\\S))|\\./', $text, $matches, PREG_OFFSET_CAPTURE) && count($matches) > 1) {
 						$newEnd = $matches[1][1];
 						if ($matches[1][0] == '.') $newEnd++;
 
