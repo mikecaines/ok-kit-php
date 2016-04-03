@@ -100,6 +100,12 @@ class Url {
 		}
 
 		if ($this->parts['path'] != '') {
+			if ($str != '') {
+				if (!preg_match('/^\\//', $this->parts['path'])) {
+					$str .= '/';
+				}
+			}
+
 			$str .= $this->parts['path'];
 		}
 
