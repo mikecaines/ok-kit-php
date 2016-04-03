@@ -196,13 +196,11 @@ class Url {
 	}
 
 	public function getFileName() {
-		$fileName = null;
-
 		if (preg_match('/([^\/]+)$/', $this->parts['path'], $matches) == 1) {
-			$fileName = $matches[1];
+			return $matches[1];
 		}
 
-		return $fileName;
+		return '';
 	}
 
 	public function __toString() {
