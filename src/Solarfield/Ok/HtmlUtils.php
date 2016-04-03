@@ -5,6 +5,9 @@ abstract class HtmlUtils {
 	static public function squishHtml($aText) {
 		$markup = $aText;
 
+		//trim
+		$markup = trim($markup);
+
 		//remove whitespace before and after tags
 		$markup = preg_replace('/(?:(?<=\>)|(?<=\/\>))(\s+)(?=\<\/?)/', '', $markup);
 
