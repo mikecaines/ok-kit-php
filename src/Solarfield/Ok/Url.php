@@ -133,49 +133,57 @@ class Url {
 		$this->parts['host'] = (string)$aHost;
 	}
 
-	public function getQueryParams() {
+	public function getQueryParamsAll() {
 		$params = array();
 
 		foreach ($this->parts['query'] as $k => $values) {
-			if (substr($k, -2) == '[]') $params[$k] = $values;
-			else $params[$k] = $values[0];
+			$params[$k] = $values;
 		}
 
 		return $params;
 	}
 
-	public function getQueryParam($aName) {
-		$value = '';
+	public function getQueryParams() {
+		$params = array();
 
-		foreach ($this->parts['query'] as $k => $v) {
-			if ($aName == $k) {
-				$value = $v[0];
-			}
+		foreach ($this->parts['query'] as $k => $values) {
+			$params[$k] = $values[0];
 		}
 
-		return $value;
+		return $params;
 	}
 
-	public function getQueryParamAsArray($aName) {
-		$value = array();
-
-		foreach ($this->parts['query'] as $k => $v) {
-			if ($aName == $k) {
-				$value = $v;
-			}
+	public function getQueryParamAll($aName) {
+		if (array_key_exists($aName, $this->parts['query'])) {
+			return $this->parts['query'][$aName];
 		}
 
-		return $value;
+		return [];
+	}
+
+	public function getQueryParam($aName) {
+		if (array_key_exists($aName, $this->parts['query'])) {
+			return $this->parts['query'][$aName][0];
+		}
+
+		return '';
 	}
 
 	public function setQueryParam($aName, $aValue = '', $aReplace = true) {
-		$values = is_array($aValue) ? $aValue : array($aValue);
+		$values = is_array($aValue) ? array_values($aValue) : array($aValue);
 
-		foreach ($values as $value) {
-			if ($aReplace) {
-				$this->parts['query'][$aName] = array($value);
-			}
-			else {
+		//normalize all values to string type
+		foreach ($values as &$value) {
+			$value = (string)$value;
+		}
+		unset($value);
+
+		if ($aReplace) {
+			$this->parts['query'][$aName] = $values;
+		}
+
+		else {
+			foreach ($values as $value) {
 				$this->parts['query'][$aName][] = $value;
 			}
 		}
