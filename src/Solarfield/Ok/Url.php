@@ -4,6 +4,32 @@ namespace Solarfield\Ok;
 use Exception;
 
 class Url {
+	static public function parseQuery($aQueryString) {
+		if ($aQueryString != '') {
+			$query = array();
+
+			$queryString = explode('&', $aQueryString);
+			foreach ($queryString as $pair) {
+				$pairParts = explode('=', $pair);
+				$paramName = $pairParts[0];
+				$paramValue = count($pairParts) > 1 ? $pairParts[1] : '';
+				$key = rawurldecode($paramName);
+
+				if (array_key_exists($key, $query) == false) {
+					$query[$key] = array();
+				}
+
+				$query[$key][] = rawurldecode($paramValue);
+			}
+		}
+
+		else {
+			$query = array();
+		}
+
+		return $query;
+	}
+
 	private $parts;
 
 	private function parseUrl($aString) {
@@ -26,37 +52,9 @@ class Url {
 			'fragment' => '',
 		), $parts);
 
-		$parts['query'] = $this->parseQuery($parts['query']);
+		$parts['query'] = static::parseQuery($parts['query']);
 
 		return $parts;
-	}
-
-	private function parseQuery($aQueryString) {
-		$queryString = $aQueryString;
-
-		if ($queryString != '') {
-			$query = array();
-
-			$queryString = explode('&', $queryString);
-			foreach ($queryString as $pair) {
-				$pairParts = explode('=', $pair);
-				$paramName = $pairParts[0];
-				$paramValue = count($pairParts) > 1 ? $pairParts[1] : '';
-				$key = rawurldecode($paramName);
-
-				if (array_key_exists($key, $query) == false) {
-					$query[$key] = array();
-				}
-
-				$query[$key][] = rawurldecode($paramValue);
-			}
-		}
-
-		else {
-			$query = array();
-		}
-
-		return $query;
 	}
 
 	private function serializeQuery($aQueryParams) {
