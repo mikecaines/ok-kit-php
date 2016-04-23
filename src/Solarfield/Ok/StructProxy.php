@@ -43,6 +43,10 @@ class StructProxy {
 		StructUtils::set($this->data, $aPath, $aValue);
 	}
 
+	public function mergeInto($aValue) {
+		StructUtils::mergeInto($this->data, $aValue);
+	}
+
 	public function __construct(array &$aData = null) {
 		if ($aData != null) {
 			$this->data = &$aData;
