@@ -329,6 +329,41 @@ abstract class StructUtils {
 		return $arr;
 	}
 
+	/**
+	 * Same as merge(), but modifies $aArray1 instead of returning a new array.
+	 * @param $aArray1
+	 * @param $aArray2
+	 * @throws Exception
+	 */
+	static public function mergeInto(&$aArray1, $aArray2) {
+		$v1 = StructUtils::isVector($aArray1);
+		$v2 = StructUtils::isVector($aArray2);
+
+		if ((($v1 && !$v2) || ($v2 && !$v1)) && count($aArray1) > 0 && count($aArray2) > 0) {
+			throw new Exception("Cannot merge associative array with vector array.");
+		}
+
+		//if $aArray2 is a vector, replace aArray1 with aArray2
+		if ($v2) {
+			array_splice($aArray1, 0);
+			foreach ($aArray2 as $k => $v) {
+				$aArray1[$k] = $v;
+			}
+		}
+
+		else {
+			foreach ($aArray2 as $k => $v) {
+				if (array_key_exists($k, $aArray1) && is_array($aArray1[$k]) && is_array($v)) {
+					StructUtils::mergeInto($aArray1[$k], $v);
+				}
+
+				else {
+					$aArray1[$k] = $v;
+				}
+			}
+		}
+	}
+
 	static public function flatten($aArray, $aSeparator = '.') {
 		$arr = array();
 
