@@ -137,6 +137,14 @@ class Url {
 		$this->parts['host'] = (string)$aHost;
 	}
 
+	public function getPort() {
+		return $this->parts['port'];
+	}
+
+	public function setPort($aPort) {
+		$this->parts['port'] = (string)$aPort;
+	}
+
 	public function getQueryParamsAll() {
 		$params = array();
 
