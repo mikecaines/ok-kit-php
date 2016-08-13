@@ -30,6 +30,26 @@ class Url {
 		return $query;
 	}
 
+	static public function serializeQuery($aQueryParams) {
+		$str = '';
+
+		if (count($aQueryParams) > 0) {
+			foreach ($aQueryParams as $paramName => $values) {
+				if (!is_array($values)) $values = [$values];
+
+				foreach ($values as $v) {
+					if ($str != '') {
+						$str .= '&';
+					}
+
+					$str .= rawurlencode($paramName) . '=' . rawurlencode($v);
+				}
+			}
+		}
+
+		return $str;
+	}
+
 	private $parts;
 
 	private function parseUrl($aString) {
@@ -55,24 +75,6 @@ class Url {
 		$parts['query'] = static::parseQuery($parts['query']);
 
 		return $parts;
-	}
-
-	private function serializeQuery($aQueryParams) {
-		$str = '';
-
-		if (count($aQueryParams) > 0) {
-			foreach ($aQueryParams as $paramName => $values) {
-				foreach ($values as $v) {
-					if ($str != '') {
-						$str .= '&';
-					}
-
-					$str .= rawurlencode($paramName) . '=' . rawurlencode($v);
-				}
-			}
-		}
-
-		return $str;
 	}
 
 	public function toString() {
@@ -109,7 +111,7 @@ class Url {
 			$str .= $this->parts['path'];
 		}
 
-		$queryString = $this->serializeQuery($this->parts['query']);
+		$queryString = static::serializeQuery($this->parts['query']);
 		if ($queryString != '') {
 			$str .= '?' . $queryString;
 		}
