@@ -12,14 +12,15 @@ class Url {
 			foreach ($queryString as $pair) {
 				$pairParts = explode('=', $pair);
 				$paramName = $pairParts[0];
-				$paramValue = count($pairParts) > 1 ? $pairParts[1] : '';
 				$key = rawurldecode($paramName);
 
 				if (array_key_exists($key, $query) == false) {
 					$query[$key] = array();
 				}
 
-				$query[$key][] = rawurldecode($paramValue);
+				if ( count($pairParts) > 1) {
+					$query[$key][] = rawurldecode($pairParts[1]);
+				}
 			}
 		}
 
@@ -37,12 +38,23 @@ class Url {
 			foreach ($aQueryParams as $paramName => $values) {
 				if (!is_array($values)) $values = [$values];
 
-				foreach ($values as $v) {
+				if (count($values) > 0) {
+					foreach ($values as $v) {
+						if ($str != '') {
+							$str .= '&';
+						}
+
+						$str .= rawurlencode($paramName);
+						if ($v !== null) $str .= '=' . rawurlencode($v);
+					}
+				}
+
+				else {
 					if ($str != '') {
 						$str .= '&';
 					}
 
-					$str .= rawurlencode($paramName) . '=' . rawurlencode($v);
+					$str .= rawurlencode($paramName);
 				}
 			}
 		}
