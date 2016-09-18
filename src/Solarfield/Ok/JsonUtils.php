@@ -19,9 +19,21 @@ abstract class JsonUtils {
 			(is_object($aThing) && $aThing instanceof ToArrayInterface)
 			|| is_array($aThing)
 		) {
-			return json_encode(StructUtils::toArray($aThing, true));
+			$thing = StructUtils::toArray($aThing, true);
 		}
 
-		return json_encode($aThing);
+		else {
+			$thing = $aThing;
+		}
+
+		$json = json_encode($thing);
+
+		if (($error = json_last_error()) != JSON_ERROR_NONE) {
+			throw new \Exception(
+				"Serializing JSON failed with code $error."
+			);
+		}
+
+		return $json;
 	}
 }
