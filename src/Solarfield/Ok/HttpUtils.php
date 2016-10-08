@@ -4,7 +4,7 @@ namespace Solarfield\Ok;
 use Exception;
 
 abstract class HttpUtils {
-	static public function createStatusHeader($aHttpStatusCode) {
+	static public function createStatusHeader($aStatusCode, $aStatusMessage = null) {
 		$headers = array(
 			200 => '200 OK',
 			304 => '304 Not Modified',
@@ -16,8 +16,14 @@ abstract class HttpUtils {
 			503 => '503 Service Unavailable',
 		);
 
-		if (!array_key_exists($aHttpStatusCode, $headers)) {
-			throw new Exception("Cannot create HTTP status header with code '" . $aHttpStatusCode . "'.");
+		if ($aStatusMessage) {
+			$message = $aStatusCode . ' ' . $aStatusMessage;
+		}
+		else if (array_key_exists($aStatusCode, $headers)) {
+			$message = $headers[$aStatusCode];
+		}
+		else {
+			$message = $aStatusCode;
 		}
 
 		$protocol = null;
@@ -29,7 +35,7 @@ abstract class HttpUtils {
 			throw new Exception("Cannot create HTTP status header because the protocol cannot be determined.");
 		}
 
-		$header = $protocol . ' ' . $headers[$aHttpStatusCode];
+		$header = $protocol . ' ' . $message;
 
 		return $header;
 	}
