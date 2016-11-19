@@ -20,13 +20,21 @@ trait EventTargetTrait {
 		return array_key_exists($aEventType, $this->listeners) && count($this->listeners[$aEventType]) > 0;
 	}
 
-	protected function dispatchEvent(EventInterface $aEvent) {
+	protected function dispatchEvent(EventInterface $aEvent, $aOptions = null) {
+		$options = [
+			'listener' => null,
+		];
+		if ($aOptions) $options = array_replace($options, $aOptions);
+
 		$type = $aEvent->getType();
 
-		if (array_key_exists($type, $this->listeners)) {
-			foreach ($this->listeners[$type] as $listener) {
-				$listener($aEvent);
-			}
+		$listeners =
+			$options['listener']
+				? [$options['listener']]
+				: (array_key_exists($type, $this->listeners) ? $this->listeners[$type] : []);
+
+		foreach ($listeners as $listener) {
+			$listener($aEvent);
 		}
 	}
 
