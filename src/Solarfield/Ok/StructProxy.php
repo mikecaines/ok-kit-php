@@ -43,6 +43,10 @@ class StructProxy {
 		StructUtils::set($this->data, $aPath, $aValue);
 	}
 
+	public function pushSet($aPath, $aValue) {
+		StructUtils::pushSet($this->data, $aPath, $aValue);
+	}
+
 	public function mergeInto($aValue) {
 		StructUtils::mergeInto($this->data, $aValue);
 	}
