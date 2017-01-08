@@ -289,6 +289,11 @@ abstract class StructUtils {
 
 		return false;
 	}
+	
+	static public function find($aArray, $aPath, $aValue, $aSeparator = '.') {
+		$k = static::search($aArray, $aPath, $aValue, $aSeparator);
+		return $k !== false ? $aArray[$k] : null;
+	}
 
 	/**
 	 * Recursively merges $aArray2 into $aArray1 according to specific criteria.
