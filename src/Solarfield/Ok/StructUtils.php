@@ -457,7 +457,7 @@ abstract class StructUtils {
 		return $arr;
 	}
 
-	static public function import($aSource, $aMap, $aScalarOnly = false) {
+	static public function import($aSource, $aMap, $aScalarOnly = false, $aFill = false) {
 		$dest = [];
 
 		foreach ($aMap as $translation) {
@@ -465,7 +465,7 @@ abstract class StructUtils {
 			else if (count($translation) == 1) $translation[] = $translation[0];
 
 			$srcInfo = static::scout($aSource, $translation[0]);
-			if ($srcInfo[0]) {
+			if ($srcInfo[0] || $aFill) {
 				if ($aScalarOnly && !(is_null($srcInfo[1]) || is_scalar($srcInfo[1]))) throw new Exception(
 					"Encountered non-scalar/null value at '$translation[0]'."
 				);
