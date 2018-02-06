@@ -49,6 +49,12 @@ abstract class MiscUtils {
 				$data['class'] = get_class($aValue);
 			}
 		}
+		
+		//else if object implements __toString()
+		else if ($isObject && method_exists($aValue, '__toString')) {
+			//get the string representation
+			$data = $aValue->__toString();
+		}
 
 		else {
 			$data = $aValue;
@@ -64,7 +70,7 @@ abstract class MiscUtils {
 		}
 
 		//else we have a null/scalar value
-		else if (is_scalar($aValue) || is_null($aValue)) {
+		else if (is_scalar($data) || is_null($data)) {
 			//leave as is
 		}
 
