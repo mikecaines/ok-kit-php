@@ -22,4 +22,8 @@ abstract class HtmlUtils {
 
 		return $t;
 	}
+	
+	static public function summarize($aHtml, int $aLength, string $aSuffix = '...') {
+		return htmlspecialchars(StringUtils::summarize(static::convertHtmlToText($aHtml), $aLength, $aSuffix));
+	}
 }
