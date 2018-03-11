@@ -4,7 +4,7 @@ namespace Solarfield\Ok;
 trait EventTargetTrait {
 	private $listeners = [];
 
-	protected function addedEventListener($aEventType, $aListener) {
+	protected function addedEventListener(string $aEventType, callable $aListener) {
 		if (array_key_exists($aEventType, $this->listeners)) {
 			foreach ($this->listeners[$aEventType] as $k => $listener) {
 				if ($listener === $aListener) {
@@ -16,11 +16,11 @@ trait EventTargetTrait {
 		return null;
 	}
 
-	protected function hasEventListeners($aEventType) {
+	protected function hasEventListeners(string $aEventType) {
 		return array_key_exists($aEventType, $this->listeners) && count($this->listeners[$aEventType]) > 0;
 	}
 
-	protected function dispatchEvent(EventInterface $aEvent, $aOptions = null) {
+	protected function dispatchEvent(EventInterface $aEvent, array $aOptions = []) {
 		$options = [
 			'listener' => null,
 		];
@@ -38,7 +38,7 @@ trait EventTargetTrait {
 		}
 	}
 
-	public function addEventListener($aEventType, $aListener) {
+	public function addEventListener(string $aEventType, callable $aListener) {
 		if (!$this->addedEventListener($aEventType, $aListener)) {
 			if (!array_key_exists($aEventType, $this->listeners)) {
 				$this->listeners[$aEventType] = [];
