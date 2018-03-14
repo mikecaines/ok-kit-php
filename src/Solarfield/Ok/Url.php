@@ -222,6 +222,15 @@ class Url {
 	public function getPath() {
 		return $this->parts['path'];
 	}
+	
+	public function setPath($aPath) {
+		$path = (string)$aPath;
+		
+		//remove duplicate leading & trailing slashes
+		$path = preg_replace('/(?:^(\\/)\\/+)|(?:(\\/)\\/+$)/', '$1', $path);
+		
+		$this->parts['path'] = $path;
+	}
 
 	public function getFileName() {
 		if (preg_match('/([^\/]+)$/', $this->parts['path'], $matches) == 1) {
