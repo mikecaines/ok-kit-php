@@ -222,14 +222,26 @@ class Url {
 	public function getPath() {
 		return $this->parts['path'];
 	}
-	
+
 	public function setPath($aPath) {
 		$path = (string)$aPath;
-		
+
 		//remove duplicate leading & trailing slashes
 		$path = preg_replace('/(?:^(\\/)\\/+)|(?:(\\/)\\/+$)/', '$1', $path);
-		
+
 		$this->parts['path'] = $path;
+	}
+
+	public function pushPath($aPath) {
+		$this->parts['path'] .= $aPath;
+	}
+
+	public function pushDir($aDir) {
+		if (!preg_match('/\/$/', $this->parts['path'])) {
+			$this->parts['path'] .= '/';
+		}
+
+		$this->parts['path'] .= rawurlencode($aDir) . '/';
 	}
 
 	public function getFileName() {
@@ -239,7 +251,17 @@ class Url {
 
 		return '';
 	}
-	
+
+	public function setFileName($aFileName) {
+		$this->parts['path'] = preg_replace('/\/[^\/]+$/', '/', $this->parts['path']);
+
+		if (!preg_match('/\/$/', $this->parts['path'])) {
+			$this->parts['path'] .= '/';
+		}
+
+		$this->parts['path'] .= rawurlencode($aFileName);
+	}
+
 	public function setFragment($aFragment) {
 		$this->parts['fragment'] = (string)$aFragment;
 	}
