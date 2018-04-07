@@ -223,12 +223,38 @@ class Url {
 		return $this->parts['path'];
 	}
 
+	public function setPath($aPath) {
+		$this->parts['path'] = (string)$aPath;
+	}
+	
+	public function pushPath($aPath) {
+		$this->parts['path'] .= $aPath;
+	}
+	
+	public function pushDir($aDir) {
+		if (!preg_match('/\/$/', $this->parts['path'])) {
+			$this->parts['path'] .= '/';
+		}
+	
+		$this->parts['path'] .= rawurlencode($aDir) . '/';
+	}
+
 	public function getFileName() {
 		if (preg_match('/([^\/]+)$/', $this->parts['path'], $matches) == 1) {
 			return $matches[1];
 		}
 
 		return '';
+	}
+	
+	public function setFileName($aFileName) {
+		$this->parts['path'] = preg_replace('/\/[^\/]+$/', '/', $this->parts['path']);
+		
+		if (!preg_match('/\/$/', $this->parts['path'])) {
+			$this->parts['path'] .= '/';
+		}
+
+		$this->parts['path'] .= rawurlencode($aFileName);
 	}
 
 	public function __toString() {
