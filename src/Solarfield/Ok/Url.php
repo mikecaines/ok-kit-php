@@ -239,6 +239,14 @@ class Url {
 
 		return '';
 	}
+	
+	public function setFragment($aFragment) {
+		$this->parts['fragment'] = (string)$aFragment;
+	}
+
+	public function getFragment() {
+		return $this->parts['fragment'];
+	}
 
 	public function __toString() {
 		return $this->toString();
