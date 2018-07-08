@@ -5,5 +5,9 @@
 		"psr-4": {
 			"Solarfield\\Ok\\": "src/Solarfield/Ok"
 		}
+	},
+
+	"require": {
+		"psr/log": "^1"
 	}
 }
