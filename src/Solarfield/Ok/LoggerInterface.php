@@ -2,7 +2,12 @@
 namespace Solarfield\Ok;
 
 interface LoggerInterface extends \Psr\Log\LoggerInterface {
-	function name(): string;
+	function getName(): string;
 	
-	function cloneWithName(string $aName): LoggerInterface;
+	/**
+	 * Clones this logger and gives it the specified name.
+	 * @param string $aName
+	 * @return LoggerInterface
+	 */
+	function withName(string $aName): LoggerInterface;
 }

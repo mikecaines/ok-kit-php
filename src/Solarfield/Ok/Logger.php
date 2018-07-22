@@ -17,11 +17,11 @@ class Logger extends AbstractLogger implements LoggerInterface {
 		error_log($msg);
 	}
 	
-	function name(): string {
+	function getName(): string {
 		return $this->name;
 	}
 	
-	function cloneWithName(string $aName): LoggerInterface {
+	function withName(string $aName): LoggerInterface {
 		return new static([
 			'name' => $aName,
 		]);
