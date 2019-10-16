@@ -14,9 +14,18 @@ abstract class HtmlUtils {
 		return $markup;
 	}
 
-	static public function convertHtmlToText($aHtml) {
+	static public function convertHtmlToText($aHtml, $aOptions = []) {
+		$options = array_replace([
+			'tagsToRemove' => ['style', 'script', 'noscript', 'head'],
+		], $aOptions);
+		
 		$t = $aHtml;
-
+		
+		foreach ($options['tagsToRemove'] as $tag) {
+			$quotedTag = preg_quote($tag, '/');
+			$t = preg_replace('/<\s*' . $quotedTag . '[^>]*>.*(?!<\s*' . $quotedTag .'[^>]*>).+<\/\s*' . $quotedTag . '\s*>/imsU', '', $t);
+		}
+		
 		$t = strip_tags($t);
 		$t = html_entity_decode($t);
 
