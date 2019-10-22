@@ -27,7 +27,7 @@ abstract class HtmlUtils {
 		}
 		
 		$t = strip_tags($t);
-		$t = html_entity_decode($t);
+		$t = html_entity_decode($t, ENT_QUOTES);
 
 		return $t;
 	}
