@@ -173,7 +173,7 @@ class Url {
 		$params = array();
 
 		foreach ($this->parts['query'] as $k => $values) {
-			$params[$k] = $values[0];
+			$params[$k] = count($values) > 0 ? $values[0] : '';
 		}
 
 		return $params;
@@ -189,7 +189,9 @@ class Url {
 
 	public function getQueryParam($aName) {
 		if (array_key_exists($aName, $this->parts['query'])) {
-			return $this->parts['query'][$aName][0];
+			if (count($this->parts['query'][$aName]) > 0) {
+				return $this->parts['query'][$aName][0];
+			}
 		}
 
 		return '';
