@@ -92,12 +92,22 @@ class Url {
 	public function toString() {
 		$str = '';
 
-		if ($this->parts['host'] != '') {
+		$scheme = strtolower($this->parts['scheme']);
+		$isHttp = $scheme === 'http' || $scheme === 'https' || $scheme === '';
+
+		if ($isHttp) {
+			if ($this->parts['host'] != '') {
+				if ($this->parts['scheme'] != '') {
+					$str .= $this->parts['scheme'] . '://';
+				}
+				else {
+					$str .= '//';
+				}
+			}
+		}
+		else {
 			if ($this->parts['scheme'] != '') {
 				$str .= $this->parts['scheme'] . '://';
-			}
-			else {
-				$str .= '//';
 			}
 		}
 
@@ -116,7 +126,9 @@ class Url {
 		if ($this->parts['path'] != '') {
 			if ($str != '') {
 				if (!preg_match('/^\\//', $this->parts['path'])) {
-					$str .= '/';
+					if ($isHttp) {
+						$str .= '/';
+					}
 				}
 			}
 
