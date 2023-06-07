@@ -107,7 +107,7 @@ class Url {
 		}
 		else {
 			if ($this->parts['scheme'] != '') {
-				$str .= $this->parts['scheme'] . '://';
+				$str .= $this->parts['scheme'] . ':';
 			}
 		}
 
