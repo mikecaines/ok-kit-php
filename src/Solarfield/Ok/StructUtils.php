@@ -156,7 +156,7 @@ abstract class StructUtils {
 
 		foreach ($aArray as $k => $v) {
 			if (is_null($v) || is_scalar($v)) {
-				$arr[$k] = trim($v);
+				$arr[$k] = trim((string)$v);
 			}
 			else if ($aDeep) {
 				$arr[$k] = StructUtils::trim($v, $aDeep);
