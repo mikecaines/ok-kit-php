@@ -65,7 +65,7 @@ class Url {
 	private $parts;
 
 	private function parseUrl($aString) {
-		$string = trim($aString);
+		$string = trim((string)$aString);
 
 		$parts = parse_url($string);
 
